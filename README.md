@@ -23,6 +23,7 @@ Toggle between **Camera Mode** and **Construction Mode** using the interface but
 | **Load World** | `Cmd + L` / `Ctrl + L` |
 
 >  **Pro-Tip:** You can dynamically resize the world frame boundary while working inside the **Camera Mode**.
+>  **Pro-Tip2:** Don't see small buttons on the up-right of the screen? open the site in fullscreen mode, i will fix this error pretty soon
 ---
 
 ## Tech Stack & Features
