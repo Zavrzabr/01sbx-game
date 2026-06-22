@@ -1,4 +1,4 @@
-# 01sbx — My first try in making cellular automata
+# [01sbx](https://zavrzabr.github.io/01sbx-game/) — My first try in making cellular automata
 > VERSION: alpha 0.0<br>
 
 **01sbx** is a Turing-complete digital sandbox that allows you to engineer whatever your heart desires. 
