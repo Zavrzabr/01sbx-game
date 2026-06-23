@@ -1,4 +1,4 @@
-# [01sbx](https://zavrzabr.github.io/01sbx-game/) — My first try in making cellular automata
+# [01sbx](https://zavrzabr.github.io/01sbx-game/index.html) — My first try in making cellular automata
 > VERSION: alpha 0.0<br>
 
 **01sbx** is a Turing-complete digital sandbox that allows you to engineer whatever your heart desires. 
@@ -30,3 +30,5 @@ Toggle between **Camera Mode** and **Construction Mode** using the interface but
 * **Engine:** GameMaker Studio 2 LTS
 * **Save System:** High-performance binary buffer serialization (creates super-lightweight `.01map` files).
 * **Cross-Platform Support:** Native input handling tailored for both Windows (Ctrl) and macOS (Cmd/Meta) keymaps.
+## NOTE
+You are likely to see readme when opened github pages. use this link to open the game! [https://zavrzabr.github.io/01sbx-game/index.html](https://zavrzabr.github.io/01sbx-game/index.html)
