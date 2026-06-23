@@ -1,0 +1,22 @@
+{
+  "FolderOrderSettings":[],
+  "ResourceOrderSettings":[
+    {"name":"obj_block_blocker","order":4,"path":"objects/obj_block_blocker/obj_block_blocker.yy",},
+    {"name":"obj_block_chainer","order":3,"path":"objects/obj_block_chainer/obj_block_chainer.yy",},
+    {"name":"obj_block_oscillator","order":2,"path":"objects/obj_block_oscillator/obj_block_oscillator.yy",},
+    {"name":"obj_block_receiver","order":6,"path":"objects/obj_block_receiver/obj_block_receiver.yy",},
+    {"name":"obj_block_teleporter","order":5,"path":"objects/obj_block_teleporter/obj_block_teleporter.yy",},
+    {"name":"obj_block","order":1,"path":"objects/obj_block/obj_block.yy",},
+    {"name":"obj_html5_scaler","order":14,"path":"objects/obj_html5_scaler/obj_html5_scaler.yy",},
+    {"name":"Script1","order":7,"path":"scripts/Script1/Script1.yy",},
+    {"name":"spr_block_blocker","order":7,"path":"sprites/spr_block_blocker/spr_block_blocker.yy",},
+    {"name":"spr_block_chainer","order":6,"path":"sprites/spr_block_chainer/spr_block_chainer.yy",},
+    {"name":"spr_block_oscillator","order":5,"path":"sprites/spr_block_oscillator/spr_block_oscillator.yy",},
+    {"name":"spr_block_receiver","order":9,"path":"sprites/spr_block_receiver/spr_block_receiver.yy",},
+    {"name":"spr_block_signaler","order":1,"path":"sprites/spr_block_signaler/spr_block_signaler.yy",},
+    {"name":"spr_block_teleporter","order":8,"path":"sprites/spr_block_teleporter/spr_block_teleporter.yy",},
+    {"name":"spr_building","order":3,"path":"sprites/spr_building/spr_building.yy",},
+    {"name":"spr_glue","order":2,"path":"sprites/spr_glue/spr_glue.yy",},
+    {"name":"spr_watching","order":4,"path":"sprites/spr_watching/spr_watching.yy",},
+  ],
+}
