@@ -6,6 +6,7 @@ Here you can see the some information abot 01sandbox and what i am going to do
 
 | NUMBER | TYPE | EXPLANATION |
 | :--- | :--- | :--- |
+| **0.0.2** | `Alpha` | Fixed critical bug resulting in big worlds being corrupted |
 | **0.0.1** | `Alpha` | Save mechanics upgraded, patched some bugs. |
 | **0.0.0** | `Alpha` | First release ever. |
 
