@@ -218,14 +218,15 @@ save_world = function(_filename) {
     var _json_string = json_stringify(_save_list);
     
     if (os_browser != browser_not_a_browser) {
-        // HTML5: Делаем как раньше — упаковываем в zlib + Base64 текст
+        // HTML5: упаковываем в zlib + Base64 текст
         var _buffer = buffer_create(1024, buffer_grow, 1);
         buffer_write(_buffer, buffer_string, _json_string);
         var _compressed_buffer = buffer_compress(_buffer, 0, buffer_tell(_buffer));
         
         map_text_code = buffer_base64_encode(_compressed_buffer, 0, buffer_get_size(_compressed_buffer));
-        get_string("Your HTML5 Map Code (Ctrl+C to copy):", map_text_code);
+        
         show_io_save_window = true;
+        menu_open = true;
         
         buffer_delete(_buffer);
         buffer_delete(_compressed_buffer);
@@ -244,17 +245,14 @@ save_world = function(_filename) {
     }
 }
 
-// Умный разбор ЛЮБОГО текста (будь то чистый JSON или HTML5-zlib-Base64 код)
 load_world_from_string = function(_string) {
     if (_string == "" || _string == undefined) return false;
     
     var _final_json = "";
     
-    // Проверяем, что нам вставили: если строка начинается с "[", то это чистый JSON массив
     if (string_char_at(_string, 1) == "[") {
         _final_json = _string;
     } else {
-        // Иначе это закодированный HTML5 zlib-код. Декодируем его обратно
         var _compressed_buffer = buffer_base64_decode(_string);
         if (_compressed_buffer != -1) {
             var _buffer = buffer_decompress(_compressed_buffer);
@@ -268,7 +266,6 @@ load_world_from_string = function(_string) {
     
     if (_final_json == "") return false;
     
-    // Чистим комнату
     with (all) {
         if (variable_instance_exists(id, "grid_x")) {
             instance_destroy();
@@ -303,13 +300,10 @@ load_world = function(_filename) {
     if (os_browser != browser_not_a_browser) {
         return load_world_from_string(map_text_code);
     } else {
-        // ПК ВЕРСИЯ
         if (_filename == "") {
-            // Если пути к файлу нет, значит импортируем через скопированный текст!
             return load_world_from_string(map_text_code);
         }
         
-        // Иначе читаем обычный файл .01mapPC
         if (!file_exists(_filename)) return false;
         
         var _compressed_buffer = buffer_load(_filename);

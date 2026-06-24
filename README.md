@@ -14,4 +14,4 @@ Here you can see the some information abot 01sandbox and what i am going to do
 ## PLANS
 > **Introduce levels to the game, which includes explanation of how everything is working**<br>
 > **Make .01mapPC compabile with HTML5 project**<br>
-> **Make this game available for WINDOWS MAC and UBUNTU**<br>
+> **Make this game available for WINDOWS, MAC and UBUNTU**<br>

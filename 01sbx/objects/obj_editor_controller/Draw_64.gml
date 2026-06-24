@@ -1,12 +1,30 @@
+function string_wrap_no_spaces(str, width) {
+    var _new_str = "";
+    var _temp_str = "";
+    var _len = string_length(str);
+    
+    for (var i = 1; i <= _len; i++) {
+        var _char = string_char_at(str, i);
+        _temp_str += _char;
+        
+        if (string_width(_temp_str) > width) {
+            _new_str += "\n" + _char; 
+            _temp_str = _char;
+        } else {
+            _new_str += _char;
+        }
+    }
+    return _new_str;
+}
+
 // ==========================================
-// 1. ИНИЦИАЛИЗАЦИЯ И СБОР ДАННЫХ КУРСОРА
+// 1. INITIALIZATION & CURSOR DATA
 // ==========================================
 var _gui_w = display_get_gui_width();
 var _gui_h = display_get_gui_height();
 var _mx = device_mouse_x_to_gui(0);
 var _my = device_mouse_y_to_gui(0);
 
-// По умолчанию сбрасываем выравнивание, чтобы базовые элементы не «поехали»
 draw_set_font(-1); 
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
@@ -14,9 +32,9 @@ draw_set_alpha(1.0);
 
 
 // ==========================================
-// 2. ОТРИСОВКА КНОПОК РЕЖИМОВ (BUILD / CAMERA)
+// 2. EDITOR MODE BUTTONS (BUILD / CAMERA)
 // ==========================================
-if (sprite_exists(spr_building) && sprite_exists(spr_watching)) {
+if sprite_exists(spr_building) && sprite_exists(spr_watching) {
     var spr_w = sprite_get_width(spr_building) * 2;
     var spr_h = sprite_get_height(spr_building) * 2;
     
@@ -44,11 +62,12 @@ draw_text(10, 10, "mode: " + string(editor_mode));
 
 
 // ==========================================
-// 3. ОТРИСОВКА ВЫЕЗЖАЮЩЕГО СТРОИТЕЛЬНОГО МЕНЮ
+// 3. SLIDE-OUT BUILDING MENU
 // ==========================================
-if (menu_current_x < window_get_width()) {
-    var _win_menu_w = window_get_width() + (0.5 * menu_current_x) - 555;
-    var _win_menu_h = window_get_height();
+if (menu_current_x < _gui_w) {
+    // Безопасный расчет размеров на базе GUI ширины
+    var _win_menu_w = _gui_w + (0.5 * menu_current_x) - 555;
+    var _win_menu_h = _gui_h;
     
     draw_set_color(c_black);
     draw_rectangle(menu_current_x, 0, _win_menu_w, _win_menu_h, false);
@@ -57,7 +76,7 @@ if (menu_current_x < window_get_width()) {
     draw_line_width(menu_current_x, 0, menu_current_x, _win_menu_h, 2);
     
     draw_set_color(c_white);
-    draw_text(menu_current_x + 15, 15, "BUILDERTOOLS:");
+    draw_text(menu_current_x + 15, 15, "BUILDER TOOLS:");
     
     var _start_item_y = 40;
     var _item_height = 50;
@@ -78,20 +97,23 @@ if (menu_current_x < window_get_width()) {
             draw_rectangle(_ix1, _iy1, _ix2, _iy2, true);
         }
         
-        if (sprite_exists(_block_info.sprite)) {
-            draw_sprite_ext(_block_info.sprite, 0, _ix1, _iy1, 1, 1, 0, c_white, 1);
+        // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: HTML5 падал, если sprite был undefined
+        if (variable_struct_exists(_block_info, "sprite") && _block_info.sprite != undefined) {
+            if (sprite_exists(_block_info.sprite)) {
+                draw_sprite_ext(_block_info.sprite, 0, _ix1, _iy1, 1, 1, 0, c_white, 1);
+            }
         }
         
         draw_set_color(c_white);
-        draw_text(_ix1 + 45, _iy1 + 12, _block_info.name);
+        draw_text(_ix1 + 45, _iy1 + 12, string(_block_info.name));
     }
 }
 
 
 // ==========================================
-// 4. ОКНО НАСТРОЙКИ ЧАСТОТЫ БЛОКА
+// 4. BLOCK FREQUENCY SETTING WINDOW
 // ==========================================
-if (editing_block != noone) {
+if (editing_block != noone && instance_exists(editing_block)) {
     editing_frequency = true;
     
     var _win_freq_w = 400;
@@ -160,9 +182,8 @@ if (editing_block != noone) {
 
 
 // ==========================================
-// 5. ИНТЕРФЕЙС ВЫБОРА: ФАЙЛ ИЛИ ТЕКСТ (ПК)
+// 5. LOAD CHOICE INTERFACE: FILE OR TEXT (PC)
 // ==========================================
-// Старый кусок с дублирующимся методом get_string_async полностью удален!
 if (os_browser == browser_not_a_browser && show_pc_load_choice) {
     var _box_w = 400;
     var _box_h = 180;
@@ -178,7 +199,7 @@ if (os_browser == browser_not_a_browser && show_pc_load_choice) {
     
     draw_set_halign(fa_center);
     draw_set_valign(fa_top);
-    draw_text((_x1 + _x2) / 2, _y1 + 20, "ТИП ЗАГРУЗКИ КАРТЫ:\n\n[ F1 ] - Файл (.01mapPC)\n[ F2 ] - Текст (JSON/Код)");
+    draw_text((_x1 + _x2) / 2, _y1 + 20, "MAP LOADING TYPE:\n\n[ F1 ] - File (.01mapPC)\n[ F2 ] - Text (JSON/Code)");
     
     if (keyboard_check_pressed(vk_f1)) {
         show_pc_load_choice = false;
@@ -195,7 +216,7 @@ if (os_browser == browser_not_a_browser && show_pc_load_choice) {
         show_pc_load_choice = false;
         input_text = "";
         keyboard_string = "";
-        is_typing = true; // Просто включаем наше окно ввода!
+        is_typing = true;
     }
     
     if (keyboard_check_pressed(vk_escape)) {
@@ -205,56 +226,72 @@ if (os_browser == browser_not_a_browser && show_pc_load_choice) {
     draw_set_halign(fa_left);
 }
 
-
 // ==========================================
-// 6. НАШЕ КАСТОМНОЕ ОКНО ВВОДА (ВМЕСТО УЖАСНЫХ МАК-ОКОН)
+// 6. CUSTOM INPUT WINDOW (IMPORT)
 // ==========================================
 if (is_typing) {
-    var _box_w = 600;
-    var _box_h = 160;
+    var _box_w = 640;
+    var _padding = 20;
+    
+    draw_set_font(fnt_press_start);
+    
+    var _base_scale = 0.65;
+    var _max_w = (_box_w - (_padding * 2) - 20) / _base_scale; 
+    
+    var _title_text = "PASTE MAP CODE AND PRESS ENTER";
+    
+    var _disp_text = "";
+    if (input_text != "") {
+        _disp_text = string_wrap_no_spaces(input_text, _max_w);
+        var _cursor = (current_time mod 1000 < 500) ? "|" : "";
+        _disp_text += _cursor;
+    } else {
+        _disp_text = "Paste code here (Cmd+V / Ctrl+V)...";
+    }
+    
+    var _raw_height = string_height(_disp_text);
+    var _text_scale = _base_scale;
+    var _max_allowed_height = 220; 
+    
+    if ((_raw_height * _text_scale) > _max_allowed_height) {
+        _text_scale = _max_allowed_height / _raw_height;
+    }
+    
+    var _text_height = _raw_height * _text_scale;
+    var _box_h = clamp(55 + _text_height + 65, 160, 400); 
+    
     var _x1 = (_gui_w - _box_w) / 2;
     var _y1 = (_gui_h - _box_h) / 2;
     var _x2 = _x1 + _box_w;
     var _y2 = _y1 + _box_h;
     
-    draw_set_color(c_black);
-    draw_rectangle(_x1, _y1, _x2, _y2, false);
-    draw_set_color(c_white);
-    draw_rectangle(_x1, _y1, _x2, _y2, true);
+    draw_set_color(c_black); draw_rectangle(_x1, _y1, _x2, _y2, false);
+    draw_set_color(c_white); draw_rectangle(_x1, _y1, _x2, _y2, true);
     
-    draw_set_halign(fa_center);
-    draw_text((_x1 + _x2) / 2, _y1 + 15, "ВСТАВЬТЕ КОД КАРТЫ И НАЖМИТЕ ENTER");
+    draw_set_halign(fa_center); draw_set_valign(fa_top);
+    draw_text((_x1 + _x2) / 2, _y1 + 15, _title_text);
     
-    var _tx1 = _x1 + 20;
-    var _ty1 = _y1 + 55;
-    var _tx2 = _x2 - 20;
+    var _tx1 = _x1 + _padding;
+    var _ty1 = _y1 + 45;
+    var _tx2 = _x2 - _padding;
     var _ty2 = _y2 - 50;
-    draw_set_color(c_black);
-    draw_rectangle(_tx1, _ty1, _tx2, _ty2, false);
-    draw_set_color(c_white);
-    draw_rectangle(_tx1, _ty1, _tx2, _ty2, true);
+    
+    draw_set_color(c_black); draw_rectangle(_tx1, _ty1, _tx2, _ty2, false);
+    draw_set_color(c_white); draw_rectangle(_tx1, _ty1, _tx2, _ty2, true);
     
     draw_set_halign(fa_left);
-    draw_set_valign(fa_middle);
+    draw_set_color((input_text == "") ? c_gray : c_white);
     
-    var _disp_text = input_text;
-    if (string_width(_disp_text) > (_tx2 - _tx1 - 20)) {
-        _disp_text = "..." + string_copy(_disp_text, string_length(_disp_text) - 40, 40);
-    }
+    draw_text_transformed(_tx1 + 10, _ty1 + 8, _disp_text, _text_scale, _text_scale, 0);
     
-    var _cursor = (current_time mod 1000 < 500) ? "|" : "";
-    draw_text(_tx1 + 10, (_ty1 + _ty2) / 2, _disp_text + _cursor);
+    draw_set_color(c_white); draw_set_halign(fa_center);
+    draw_text((_x1 + _x2) / 2, _y2 - 25, "[Cmd+V/Ctrl+V] - Paste | [ESC] - Cancel");
     
-    draw_set_halign(fa_center);
-    draw_text((_x1 + _x2) / 2, _y2 - 25, "[Cmd+V/Ctrl+V] - Вставить | [ESC] - Отмена");
-    
-    draw_set_halign(fa_left);
-    draw_set_valign(fa_top);
+    draw_set_halign(fa_left); draw_set_valign(fa_top);
 }
 
-
 // ==========================================
-// 7. ОКНО ПОДТВЕРЖДЕНИЯ ЗАГРУЗКИ КАРТЫ
+// 7. LOAD CONFIRMATION WINDOW
 // ==========================================
 if (show_load_confirm) {
     var _win_conf_w = 320;
@@ -312,59 +349,82 @@ if (show_load_confirm) {
 
 
 // ==========================================
-// 8. ОКНО СОХРАНЕНИЯ КОДА (EXPORT / HTML5)
+// 8. MAP CODE EXPORT WINDOW (ФИКС ВЫЛЕТА)
 // ==========================================
 if (show_io_save_window) {
-    var _win_save_w = 460;
-    var _win_save_h = 180;
+    var _win_save_w = 450; // Сделаем окно чуть компактнее и аккуратнее
+    var _win_save_h = 200;
     var _win_save_x = (_gui_w - _win_save_w) / 2;
     var _win_save_y = (_gui_h - _win_save_h) / 2;
     
-    draw_set_alpha(0.6); draw_set_color(c_black);
-    draw_rectangle(0, 0, _gui_w, _gui_h, false);
+    // Затемнение заднего фона
+    draw_set_alpha(0.6); 
+    draw_set_color(c_black); 
+    draw_rectangle(0, 0, _gui_w, _gui_h, false); 
     draw_set_alpha(1.0);
     
-    draw_set_color(c_black); draw_rectangle(_win_save_x, _win_save_y, _win_save_x + _win_save_w, _win_save_y + _win_save_h, false);
-    draw_set_color(c_white); draw_rectangle(_win_save_x, _win_save_y, _win_save_x + _win_save_w, _win_save_y + _win_save_h, true);
+    // Основное окно
+    draw_set_color(c_black); 
+    draw_rectangle(_win_save_x, _win_save_y, _win_save_x + _win_save_w, _win_save_y + _win_save_h, false);
+    draw_set_color(c_white); 
+    draw_rectangle(_win_save_x, _win_save_y, _win_save_x + _win_save_w, _win_save_y + _win_save_h, true);
     
+    // Заголовок
     draw_set_font(fnt_press_start);
-    draw_set_halign(fa_center);
-    draw_text(_win_save_x + _win_save_w / 2, _win_save_y + 20, "MAP COPIED TO CLIPBOARD!");
-    
-    var _box_x = _win_save_x + 20;
-    var _box_y = _win_save_y + 50;
-    var _box_w = _win_save_w - 40;
-    var _box_h = 40;
-    draw_set_color(c_darkgray); draw_rectangle(_box_x, _box_y, _box_x + _box_w, _box_y + _box_h, false);
-    draw_set_color(c_white); draw_rectangle(_box_x, _box_y, _box_x + _box_w, _box_y + _box_h, true);
-    
-    draw_set_halign(fa_left);
-    var _short_text = string_copy(map_text_code, 1, 35) + "...";
-    draw_text(_box_x + 10, _box_y + 15, _short_text);
-    
-    draw_set_halign(fa_center);
-    draw_set_color(c_gray);
-    draw_text(_win_save_x + _win_save_w / 2, _win_save_y + 105, "Paste it to any text file");
-    
-    var _btn_x = _win_save_x + (_win_save_w - 120) / 2;
-    var _btn_y = _win_save_y + 130;
-    var _btn_w = 120;
-    var _btn_h = 35;
-    var _hover = (_mx >= _btn_x && _mx < _btn_x + _btn_w && _my >= _btn_y && _my < _btn_y + _btn_h);
-    
-    draw_set_color(_hover ? c_green : c_white);
-    draw_rectangle(_btn_x, _btn_y, _btn_x + _btn_w, _btn_y + _btn_h, true);
+    draw_set_halign(fa_center); 
+    draw_set_valign(fa_top); 
     draw_set_color(c_white);
-    draw_text(_btn_x + _btn_w / 2, _btn_y + 12, "CLOSE");
+    draw_text(_win_save_x + _win_save_w / 2, _win_save_y + 20, "MAP EXPORTED!");
     
-    if (_hover && mouse_check_button_pressed(mb_left)) {
+    // Информационное сообщение (Вместо падения на расчете длинного кода)
+    draw_set_font(-1); // Используем стандартный безопасный шрифт для описания
+    draw_text_transformed(_win_save_x + _win_save_w / 2, _win_save_y + 60, "The world code has been successfully generated\nand AUTOMATICALLY copied to your clipboard!", 1, 1, 0);
+    draw_text_transformed(_win_save_x + _win_save_w / 2, _win_save_y + 95, "You can paste it directly into another game session.", 0.85, 0.85, 0);
+    
+    // КНОПКИ УПРАВЛЕНИЯ
+    var _btn_w = 160; 
+    var _btn_h = 35;
+    var _btn_y = _win_save_y + _win_save_h - 55;
+    
+    // КНОПКА 1: COPY AGAIN (На случай, если буфер перезаписался)
+    var _btn_copy_x = _win_save_x + (_win_save_w / 2) - _btn_w - 15;
+    var _hover_copy = (_mx >= _btn_copy_x && _mx < _btn_copy_x + _btn_w && _my >= _btn_y && _my < _btn_y + _btn_h);
+    
+    draw_set_color(_hover_copy ? c_green : c_white); 
+    draw_rectangle(_btn_copy_x, _btn_y, _btn_copy_x + _btn_w, _btn_y + _btn_h, true);
+    
+    draw_set_color(c_white); 
+    draw_set_halign(fa_center); 
+    draw_set_font(fnt_press_start);
+    draw_text_transformed(_btn_copy_x + _btn_w / 2, _btn_y + 12, "COPY AGAIN", 0.75, 0.75, 0);
+    
+    if (_hover_copy && mouse_check_button_pressed(mb_left)) {
+        if (map_text_code != "" && map_text_code != undefined) {
+            clipboard_set_text(map_text_code);
+        }
+    }
+    
+    // КНОПКА 2: CLOSE
+    var _btn_close_x = _win_save_x + (_win_save_w / 2) + 15;
+    var _hover_close = (_mx >= _btn_close_x && _mx < _btn_close_x + _btn_w && _my >= _btn_y && _my < _btn_y + _btn_h);
+    
+    draw_set_color(_hover_close ? c_red : c_white); 
+    draw_rectangle(_btn_close_x, _btn_y, _btn_close_x + _btn_w, _btn_y + _btn_h, true);
+    
+    draw_set_color(c_white); 
+    draw_set_halign(fa_center);
+    draw_text_transformed(_btn_close_x + _btn_w / 2, _btn_y + 12, "CLOSE", 0.75, 0.75, 0);
+    
+    if (_hover_close && mouse_check_button_pressed(mb_left)) {
         show_io_save_window = false;
         menu_open = false;
     }
-    draw_set_halign(fa_left);
+    
+    draw_set_halign(fa_left); 
+    draw_set_valign(fa_top);
 }
 
-// Финальный сброс параметров рендеринга на стандартные
+
 draw_set_font(-1);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);

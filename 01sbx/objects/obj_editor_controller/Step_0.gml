@@ -470,9 +470,15 @@ if (is_typing) {
 } 
 else {
     if (_modifier_pressed) {
-        if (keyboard_check_pressed(83)) { 
+        if (keyboard_check_pressed(ord("S"))) {
             if (os_browser != browser_not_a_browser) {
                 save_world(""); 
+                show_io_save_window = true; 
+                menu_open = true;
+                
+                if (map_text_code != "" && map_text_code != undefined) {
+                    clipboard_set_text(map_text_code);
+                }
             } else {
                 var _path = get_save_filename("01sbx PC Map|*.01mapPC", default_save_name);
                 if (_path != "") {
@@ -482,7 +488,7 @@ else {
             }
         }
         
-        if (keyboard_check_pressed(76)) { 
+        if (keyboard_check_pressed(ord("L"))) {
             if (os_browser != browser_not_a_browser) {
                 input_text = "";
                 keyboard_string = "";
