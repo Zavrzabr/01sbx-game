@@ -1,5 +1,5 @@
 # [01sbx](https://zavrzabr.github.io/01sbx-game/index.html) — My first try in making cellular automata
-> VERSION: alpha 0.0<br>
+> VERSION: alpha 0.0.2<br>
 
 **01sbx** is a Turing-complete digital sandbox that allows you to engineer whatever your heart desires. 
 
